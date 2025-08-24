@@ -1,0 +1,24 @@
+[project]
+name = "smart_car_buying_assistant"
+version = "0.1.0"
+description = "smart_car_buying_assistant using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools]>=0.150.0,<1.0.0",
+    "flask>=2.3.0,<3.0.0"
+]
+
+[project.scripts]
+smart_car_buying_assistant = "smart_car_buying_assistant.main:run"
+run_crew = "smart_car_buying_assistant.main:run"
+train = "smart_car_buying_assistant.main:train"
+replay = "smart_car_buying_assistant.main:replay"
+test = "smart_car_buying_assistant.main:test"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"

@@ -1,0 +1,79 @@
+---
+collect_car_buying_requirements:
+  description: 'Gather and validate comprehensive car buying requirements from the
+    user including budget range (minimum and maximum), preferred car type (sedan,
+    SUV, truck, etc.), must-have vs nice-to-have features, current state of residence,
+    financing preferences (cash, loan, lease), intended use (daily commute, family
+    car, work vehicle), and timeline for purchase. Process the provided requirements:
+    {user_requirements}'
+  expected_output: A structured requirements document with validated user preferences,
+    constraints, and a complete profile for car search including budget range, car
+    type, location, features, financing method, and purchase timeline
+  agent: car_buying_requirements_analyst
+research_vehicle_market:
+  description: Based on the gathered requirements, use targeted search queries to
+    find vehicles that match the criteria across major platforms. Use search terms
+    like "cars for sale [car_type] [location] under [budget]" and "used [car_type]
+    [budget_range] [location]". Focus on finding 10-15 best matches that meet the
+    user's budget, car type, and feature requirements. Flag any out-of-state vehicles
+    for legal review. Prioritize speed and efficiency over comprehensive website scraping.
+  expected_output: A comprehensive list of 10-15 recommended vehicles with complete
+    details (year, make, model, price, mileage, location, seller type) and clear flags
+    for any out-of-state vehicles that require legal consideration
+  agent: car_market_research_specialist
+  context:
+  - collect_car_buying_requirements
+analyze_legal_requirements:
+  description: For any out-of-state vehicles identified in the market research, provide
+    detailed legal requirements for purchase and registration in the buyer's home
+    state. Include required documentation for title transfer, tax implications and
+    additional fees, any restrictions or emissions requirements, estimated timeline
+    and costs for registration process, and create a comprehensive checklist of steps
+    needed to complete the purchase legally.
+  expected_output: Complete legal requirements guide for out-of-state purchases including
+    documentation checklists, fee estimates, registration timelines, tax implications,
+    and step-by-step process guides for each relevant state combination
+  agent: interstate_car_purchase_legal_advisor
+  context:
+  - research_vehicle_market
+evaluate_vehicle_values:
+  description: Analyze the fair market value of each recommended vehicle using multiple
+    valuation sources. Factor in vehicle condition, mileage, location, and market
+    demand. Flag vehicles that are overpriced (>10% above market value) and suspiciously
+    underpriced vehicles that may indicate potential problems. Calculate price negotiation
+    ranges for each vehicle and rank all vehicles by value proposition to help the
+    buyer prioritize their choices.
+  expected_output: Comprehensive valuation report with fair market prices, overpriced/underpriced
+    flags, negotiation ranges, and complete value rankings for all recommended vehicles
+    with detailed analysis of pricing factors
+  agent: vehicle_valuation_expert
+  context:
+  - research_vehicle_market
+  - analyze_legal_requirements
+develop_negotiation_strategies:
+  description: For the top-ranked vehicles from the valuation analysis, develop comprehensive
+    negotiation strategies and talking points. Research seller backgrounds (dealer
+    vs private party), analyze listing duration and any price changes, create specific
+    negotiation tactics and optimal offer prices, suggest escalation limits and fallback
+    positions, identify potential red flags or concerns to address during negotiations,
+    and provide negotiation scripts for different scenarios.
+  expected_output: Detailed negotiation guide with customized strategies, optimal
+    offer prices, escalation tactics, seller-specific talking points, and ready-to-use
+    scripts for top vehicle candidates
+  agent: car_purchase_negotiation_strategist
+  context:
+  - evaluate_vehicle_values
+create_inspection_plan:
+  description: For the final vehicle candidates from the negotiation analysis, create
+    comprehensive inspection and test drive plans. Develop detailed inspection checklists
+    covering exterior, interior, engine, and mechanical components. Suggest specific
+    questions to ask sellers about vehicle history and condition. Recommend professional
+    inspection services when needed. Provide guidance on test drive evaluation criteria
+    and create a timeline for the inspection and decision-making process with warning
+    signs that should end negotiations.
+  expected_output: Complete inspection guide with detailed checklists, seller questions,
+    test drive evaluation criteria, professional service recommendations, decision
+    timeline, and red flag warnings for final vehicle candidates
+  agent: vehicle_inspection_coordinator
+  context:
+  - develop_negotiation_strategies

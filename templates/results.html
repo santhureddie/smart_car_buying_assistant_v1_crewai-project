@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Buying Analysis Results</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .loading p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section h2 i {
+            color: #667eea;
+        }
+
+        .section-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .section-content pre {
+            background: #f1f3f4;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        .agent-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-top: 3px solid #667eea;
+        }
+
+        .agent-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .agent-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .summary h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .summary p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .results-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .results-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .results-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .agent-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Form
+            </a>
+            <h1><i class="fas fa-chart-line"></i>Your Car Buying Analysis</h1>
+            <p>Comprehensive analysis from our AI experts</p>
+        </div>
+
+        <div class="content">
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading your analysis results...</p>
+            </div>
+
+            <div id="error" class="error" style="display: none;"></div>
+
+            <div id="results" style="display: none;">
+                <div class="summary">
+                    <h2><i class="fas fa-clipboard-check"></i>Analysis Summary</h2>
+                    <p>Your car buying analysis has been completed by our team of AI experts. Below you'll find detailed recommendations, market research, legal considerations, and negotiation strategies tailored to your specific requirements.</p>
+                </div>
+
+                <div id="resultsContent"></div>
+
+                <div style="text-align: center;">
+                    <button class="download-btn" onclick="downloadResults()">
+                        <i class="fas fa-download"></i>
+                        Download Full Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sessionId = '{{ session_id }}';
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const results = document.getElementById('results');
+        const resultsContent = document.getElementById('resultsContent');
+
+        // Load results when page loads
+        window.addEventListener('load', loadResults);
+
+        async function loadResults() {
+            try {
+                const response = await fetch(`/results/${sessionId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.results) {
+                        displayResults(data.results);
+                    } else {
+                        throw new Error('No results data found');
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to load results');
+                }
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
+        function displayResults(resultsData) {
+            if (loading) loading.style.display = 'none';
+            if (results) results.style.display = 'block';
+
+            // Parse the results and display them in sections
+            const sections = parseResults(resultsData);
+            
+            if (resultsContent) {
+                sections.forEach(section => {
+                    const sectionElement = createSection(section);
+                    resultsContent.appendChild(sectionElement);
+                });
+            }
+        }
+
+        function parseResults(resultsData) {
+            const sections = [];
+            
+            // Try to parse the results based on the expected structure
+            if (typeof resultsData === 'string') {
+                // If it's a string, try to extract meaningful sections
+                const lines = resultsData.split('\n');
+                let currentSection = null;
+                let currentContent = [];
+                let inTable = false;
+                let tableContent = [];
+
+                lines.forEach(line => {
+                    const trimmedLine = line.trim();
+                    
+                    // Check for main section headers (lines that end with colon and are not table headers)
+                    if (trimmedLine.includes(':') && trimmedLine.length < 100 && 
+                        !trimmedLine.startsWith('-') && !trimmedLine.includes('|') &&
+                        !trimmedLine.includes('Rank') && !trimmedLine.includes('Vehicle Model')) {
+                        
+                        // Save previous section if exists
+                        if (currentSection) {
+                            if (inTable) {
+                                // Add table content to previous section
+                                sections[sections.length - 1].content += '\n' + tableContent.join('\n');
+                                inTable = false;
+                                tableContent = [];
+                            } else {
+                                sections.push({
+                                    title: currentSection,
+                                    content: currentContent.join('\n').trim(),
+                                    icon: getIconForSection(currentSection)
+                                });
+                            }
+                        }
+                        
+                        currentSection = trimmedLine;
+                        currentContent = [];
+                    } else if (trimmedLine.includes('|') && 
+                             (trimmedLine.includes('Rank') || trimmedLine.includes('Vehicle Model') || 
+                              trimmedLine.includes('------') || trimmedLine.includes('Negotiation'))) {
+                        // Start of a table
+                        inTable = true;
+                        tableContent = [line];
+                    } else if (inTable && trimmedLine.includes('|')) {
+                        // Continue table
+                        tableContent.push(line);
+                    } else if (inTable && !trimmedLine.includes('|')) {
+                        // End of table
+                        inTable = false;
+                        if (currentSection) {
+                            sections.push({
+                                title: currentSection,
+                                content: currentContent.join('\n').trim() + '\n' + tableContent.join('\n'),
+                                icon: getIconForSection(currentSection)
+                            });
+                        }
+                        currentSection = null;
+                        currentContent = [];
+                        tableContent = [];
+                    } else if (trimmedLine && !inTable) {
+                        currentContent.push(line);
+                    }
+                });
+
+                // Add the last section
+                if (currentSection) {
+                    if (inTable) {
+                        sections.push({
+                            title: currentSection,
+                            content: currentContent.join('\n').trim() + '\n' + tableContent.join('\n'),
+                            icon: getIconForSection(currentSection)
+                        });
+                    } else {
+                        sections.push({
+                            title: currentSection,
+                            content: currentContent.join('\n').trim(),
+                            icon: getIconForSection(currentSection)
+                        });
+                    }
+                }
+
+                // If no sections found, create a single section
+                if (sections.length === 0) {
+                    sections.push({
+                        title: 'Complete Analysis',
+                        content: resultsData,
+                        icon: 'fas fa-file-alt'
+                    });
+                }
+            } else {
+                // If it's an object, try to extract sections
+                sections.push({
+                    title: 'Analysis Results',
+                    content: JSON.stringify(resultsData, null, 2),
+                    icon: 'fas fa-chart-bar'
+                });
+            }
+
+            return sections;
+        }
+
+        function getIconForSection(title) {
+            const lowerTitle = title.toLowerCase();
+            
+            if (lowerTitle.includes('customer profile') || lowerTitle.includes('profile')) {
+                return 'fas fa-user';
+            } else if (lowerTitle.includes('top') && lowerTitle.includes('recommended')) {
+                return 'fas fa-car';
+            } else if (lowerTitle.includes('detailed reasons')) {
+                return 'fas fa-list-check';
+            } else if (lowerTitle.includes('out-of-state registration') || lowerTitle.includes('registration')) {
+                return 'fas fa-id-card';
+            } else if (lowerTitle.includes('negotiation strategies') || lowerTitle.includes('negotiation')) {
+                return 'fas fa-handshake';
+            } else if (lowerTitle.includes('inspection checklists') || lowerTitle.includes('inspection')) {
+                return 'fas fa-tools';
+            } else if (lowerTitle.includes('final recommendations') || lowerTitle.includes('recommendations')) {
+                return 'fas fa-lightbulb';
+            } else if (lowerTitle.includes('requirement') || lowerTitle.includes('need')) {
+                return 'fas fa-clipboard-list';
+            } else if (lowerTitle.includes('market') || lowerTitle.includes('research')) {
+                return 'fas fa-search';
+            } else if (lowerTitle.includes('legal') || lowerTitle.includes('law')) {
+                return 'fas fa-gavel';
+            } else if (lowerTitle.includes('value') || lowerTitle.includes('price')) {
+                return 'fas fa-dollar-sign';
+            } else if (lowerTitle.includes('deal')) {
+                return 'fas fa-handshake';
+            } else if (lowerTitle.includes('test')) {
+                return 'fas fa-tools';
+            } else {
+                return 'fas fa-file-alt';
+            }
+        }
+
+        function createSection(section) {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'section';
+            
+            // Check if content contains tables
+            const hasTable = section.content.includes('|') && section.content.includes('Rank');
+            
+            if (hasTable) {
+                // Format as table
+                const lines = section.content.split('\n');
+                let tableHtml = '';
+                let inTable = false;
+                let tableRows = [];
+                
+                lines.forEach(line => {
+                    const trimmedLine = line.trim();
+                    if (trimmedLine.includes('|') && (trimmedLine.includes('Rank') || trimmedLine.includes('Vehicle Model') || trimmedLine.includes('------'))) {
+                        inTable = true;
+                        tableRows.push(trimmedLine);
+                    } else if (inTable && trimmedLine.includes('|')) {
+                        tableRows.push(trimmedLine);
+                    } else if (inTable && !trimmedLine.includes('|')) {
+                        inTable = false;
+                        // Convert table rows to HTML
+                        tableHtml = convertTableToHtml(tableRows);
+                    }
+                });
+                
+                if (inTable) {
+                    tableHtml = convertTableToHtml(tableRows);
+                }
+                
+                sectionDiv.innerHTML = `
+                    <h2><i class="${section.icon}"></i>${section.title}</h2>
+                    <div class="section-content">
+                        ${tableHtml}
+                    </div>
+                `;
+            } else {
+                // Format as regular text
+                sectionDiv.innerHTML = `
+                    <h2><i class="${section.icon}"></i>${section.title}</h2>
+                    <div class="section-content">
+                        <pre>${escapeHtml(section.content)}</pre>
+                    </div>
+                `;
+            }
+            
+            return sectionDiv;
+        }
+
+        function convertTableToHtml(tableRows) {
+            if (tableRows.length === 0) return '';
+            
+            let html = '<div class="table-container"><table class="results-table">';
+            
+            tableRows.forEach((row, index) => {
+                const cells = row.split('|').map(cell => cell.trim()).filter(cell => cell);
+                
+                if (index === 0) {
+                    // Header row
+                    html += '<thead><tr>';
+                    cells.forEach(cell => {
+                        html += `<th>${escapeHtml(cell)}</th>`;
+                    });
+                    html += '</tr></thead><tbody>';
+                } else if (row.includes('------')) {
+                    // Skip separator row
+                    return;
+                } else {
+                    // Data row
+                    html += '<tr>';
+                    cells.forEach(cell => {
+                        html += `<td>${escapeHtml(cell)}</td>`;
+                    });
+                    html += '</tr>';
+                }
+            });
+            
+            html += '</tbody></table></div>';
+            return html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showError(message) {
+            if (loading) loading.style.display = 'none';
+            if (error) {
+                error.style.display = 'block';
+                error.textContent = message;
+            }
+        }
+
+        function downloadResults() {
+            // Create a text file with the results
+            const content = resultsContent.innerText;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `car_buying_analysis_${sessionId}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
